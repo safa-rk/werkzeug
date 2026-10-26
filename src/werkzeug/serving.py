@@ -571,6 +571,9 @@ def make_ssl_devcert(
     :param host: the name of the host.  This can be used as an alternative
                  for the `cn`.
     :param cn: the `CN` to use.
+
+    .. versionchanged:: 3.2
+        The key file is created with ``0o600`` permissions.
     """
 
     if host is not None:
@@ -584,7 +587,8 @@ def make_ssl_devcert(
 
     with open(cert_file, "wb") as f:
         f.write(cert.public_bytes(serialization.Encoding.PEM))
-    with open(pkey_file, "wb") as f:
+    # The key is unencrypted, don't let the umask make it readable by others.
+    with open(pkey_file, "wb", opener=lambda p, f: os.open(p, f, 0o600)) as f:
         f.write(
             pkey.private_bytes(
                 encoding=serialization.Encoding.PEM,
