@@ -94,6 +94,12 @@ def test_ssl_dev_cert(tmp_path: Path, dev_server: StartDevServer) -> None:
     assert r.json["wsgi.url_scheme"] == "https"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX permissions")
+def test_ssl_dev_cert_key_permissions(tmp_path: Path) -> None:
+    _, key_file = make_ssl_devcert(os.fspath(tmp_path / "dev"))
+    assert os.stat(key_file).st_mode & 0o777 == 0o600
+
+
 @pytest.mark.dev_server
 def test_ssl_object(dev_server: StartDevServer) -> None:
     client = dev_server(ssl_context="custom")

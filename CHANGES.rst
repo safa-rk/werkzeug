@@ -298,6 +298,8 @@ Version 3.2.0
     :issue:`3328`
 -   Colorama is never used. Modern Windows terminals support ANSI styles
     natively. :pr:`3331`
+-   ``make_ssl_devcert`` creates the private key file with ``0o600``
+    permissions instead of depending on the umask.
 
 
 Version 3.1.9
