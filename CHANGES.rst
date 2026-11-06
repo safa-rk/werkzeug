@@ -301,6 +301,9 @@ Version 3.2.0
 -   The ``Response.text`` property is a shortcut for
     ``r.get_data(as_text=True)``. This is useful during tests, but was
     previously only on ``TestResponse``. :pr:`3341`
+-   ``ProfilerMiddleware`` replaces path separators in the request method and
+    path when generating the default profile file name, so a client can't write
+    files outside ``profile_dir``.
 
 
 Version 3.1.9

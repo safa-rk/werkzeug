@@ -140,9 +140,15 @@ class ProfilerMiddleware:
                 }
                 filename = self._filename_format(environ)
             else:
+                # The method and path come from the client, replace path
+                # separators so they can't write outside profile_dir.
+                method = environ["REQUEST_METHOD"].replace("/", ".").replace("\\", ".")
+                path = (
+                    environ["PATH_INFO"].strip("/").replace("/", ".").replace("\\", ".")
+                )
                 filename = self._filename_format.format(
-                    method=environ["REQUEST_METHOD"],
-                    path=environ["PATH_INFO"].strip("/").replace("/", ".") or "root",
+                    method=method,
+                    path=path or "root",
                     elapsed=elapsed * 1000.0,
                     time=time.time(),
                 )

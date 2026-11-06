@@ -48,3 +48,18 @@ def test_filename_format_function():
         mock_capture_name.assert_called_once_with(name=ANY)
         name = mock_capture_name.mock_calls[0].kwargs["name"]
         mock_profile.dump_stats.assert_called_once_with(os.path.join("profiles", name))
+
+
+def test_filename_path_separators(tmp_path):
+    profile_dir = tmp_path / "profiles"
+    profile_dir.mkdir()
+    app = ProfilerMiddleware(
+        dummy_application,
+        stream=None,
+        profile_dir=str(profile_dir),
+        filename_format="{method}.{path}.prof",
+    )
+    client = Client(app)
+    client.open("/a\\..\\..\\b", method="../escaped")
+    assert [p.name for p in tmp_path.iterdir()] == ["profiles"]
+    assert [p.name for p in profile_dir.iterdir()] == ["...escaped.a.......b.prof"]
